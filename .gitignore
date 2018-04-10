@@ -1,0 +1,7 @@
+ray_tracing_the_next_week/Release/*
+ray_tracing_the_next_week/Debug/*
+*.tlog
+*.db
+.vs/ray_tracing_the_next_week/v15/Browse.VC.opendb
+*.ipch
+Release/*
