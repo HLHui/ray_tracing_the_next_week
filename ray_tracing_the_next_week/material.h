@@ -46,15 +46,15 @@ vec3 randomInUnitSphere()
 	return p;
 }
 
-
 class material
 {
 public:
-	virtual vec3 emitted(float u, float v, vec3& p) const
+
+	virtual bool scatter(const ray &rIn, const hitRecord &rec, vec3 &attenuation, ray &scatter) const = 0;
+	virtual vec3 emitted(float u, float v, const vec3& p) const
 	{
 		return vec3(0, 0, 0);
 	}
-	virtual bool scatter(const ray &rIn, const hitRecord &rec, vec3 &attenuation, ray &scatter) const = 0;
 };
 
 class lambertian :public material
@@ -146,6 +146,8 @@ public:
 	}
 };
 
+
+//light emite material
 class diffuseLight :public material
 {
 public:
@@ -161,3 +163,77 @@ public:
 	}
 };
 
+
+class isotropic :public material
+{
+public:
+	isotropic(texture* a) :albedo(a) {}
+	texture *albedo;
+	virtual bool scatter(const ray& rIn, const hitRecord& rec, vec3& attenuation, ray& scattered)const
+	{
+		scattered = ray(rec.p, randomInUnitSphere());
+		attenuation = albedo->value(rec.u, rec.v, rec.p);
+		return true;
+	}
+};
+
+class constantMedium :public hitable {
+public:
+	constantMedium(hitable *b, float d, texture *a) :boundary(b), density(d)
+	{
+		phaseFunction = new isotropic(a);
+	}
+	virtual bool hit(const ray& r, float tmin, float tmax, hitRecord& rec)const
+	{
+		bool db = (rand() / float(RAND_MAX) < 0.00001);
+		db = false;
+		hitRecord rec1, rec2;
+		if (boundary->hit(r, -FLT_MAX, FLT_MAX, rec1))
+		{
+			if (boundary->hit(r, rec1.t + 0.0001, FLT_MAX, rec2))
+			{
+				if (db)
+				{
+					cerr << endl << "t0 t1 " << rec1.t << " " << rec2.t << endl;
+				}
+				if (rec1.t < tmin)
+				{
+					rec1.t = tmin;
+				}
+				if (rec2.t > tmax)
+				{
+					rec2.t = tmax;
+				}
+				if (rec1.t > rec2.t)
+				{
+					return false;
+				}
+				if (rec1.t < 0)
+				{
+					rec1.t = 0;
+				}
+				float distanceInsideBoundary = (rec2.t - rec1.t)*r.direction().length();
+				float hitDistance = -(1 / density)*log(rand() / float(RAND_MAX));
+				if (hitDistance < distanceInsideBoundary)
+				{
+					if (db)cerr << "hitDistance = " << hitDistance << endl;
+					rec.t = rec1.t + hitDistance / r.direction().length();
+					if (db)cerr << "rec.t = " << rec.t << endl;
+					rec.p = r.point_at_parameter(rec.t);
+					if (db)cerr << "rec.p = " << rec.p << endl;
+					rec.normal = vec3(1, 0, 0);
+					rec.matPtr = phaseFunction;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	virtual bool boundingBox(float t0, float t1, aabb& box)const
+	{
+		return boundary->boundingBox(t0, t1, box);
+	}
+	hitable *boundary;
+	float density;
+	material *phaseFunction;
+};

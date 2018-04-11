@@ -41,7 +41,6 @@ int boxZcompare(const void *a, const void *b)
 		return 1;
 }
 
-
 class bvhNode :public hitable 
 {
 public:

@@ -57,6 +57,7 @@ public:
 //		return vec3(1, 1, 1)*(1 + sin(scale*p.z() + 10 * noise.turb(p)));//turblence2
 //		return vec3(1, 1, 1)*0.1*(1 + sin(scale*p.z() + 10 * noise.turb(p)));//turbence4;
 		return vec3(1, 1, 1)*0.4*(1 + sin(scale*p.z() + 10 * noise.turb(p)));//turbence5;
+//		return vec3(1, 1, 1)*0.4*(1 + sin(scale*p.x() + 5 * noise.turb(scale*p)));//simple light;
 
 
 	}
