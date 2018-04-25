@@ -2,55 +2,6 @@
 #include "hitable.h"
 #include "vec2.h"
 
-bool inPolyonTest(vec2 *vertexesUV, int number)
-{
-	int sh, nsh;
-	int nc = 0;
-	if (vertexesUV[0].v < 0)
-	{
-		sh = -1;
-	}
-	else
-	{
-		sh = 1;
-	}
-
-	for (int j = 0; j < number; j++)
-	{
-		if (vertexesUV[j + 1].v < 0)
-		{
-			nsh = -1;
-		}
-		else
-		{
-			nsh = 1;
-		}
-		if (sh != nsh)
-		{
-			if (vertexesUV[j].u > 0 && vertexesUV[j + 1].u > 0)
-			{
-				nc++;
-			}
-			else
-			{
-				if (vertexesUV[j].u > 0 && vertexesUV[j + 1].u > 0)
-				{
-					if ((vertexesUV[j].u - vertexesUV[j].v)*(vertexesUV[j + 1].u - vertexesUV[j].u) / (vertexesUV[j + 1].v - vertexesUV[j].v) > 0)
-					{
-						nc++;
-					}
-				}
-			}
-		}
-		sh = nsh;
-	}
-	if (nc % 2)
-	{
-		return true;
-	}
-	return false;
-}
-
 class triangle :public hitable
 {
 public:
@@ -108,7 +59,54 @@ public:
 	}
 };
 
+/*bool inPolyonTest(vec2 *vertexesUV, int number)
+{
+	int sh, nsh;
+	int nc = 0;
+	if (vertexesUV[0].v < 0)
+	{
+		sh = -1;
+	}
+	else
+	{
+		sh = 1;
+	}
 
+	for (int j = 0; j < number; j++)
+	{
+		if (vertexesUV[j + 1].v < 0)
+		{
+			nsh = -1;
+		}
+		else
+		{
+			nsh = 1;
+		}
+		if (sh != nsh)
+		{
+			if (vertexesUV[j].u > 0 && vertexesUV[j + 1].u > 0)
+			{
+				nc++;
+			}
+			else
+			{
+				if (vertexesUV[j].u > 0 && vertexesUV[j + 1].u > 0)
+				{
+					if ((vertexesUV[j].u - vertexesUV[j].v)*(vertexesUV[j + 1].u - vertexesUV[j].u) / (vertexesUV[j + 1].v - vertexesUV[j].v) > 0)
+					{
+						nc++;
+					}
+				}
+			}
+		}
+		sh = nsh;
+	}
+	if (nc % 2)
+	{
+		return true;
+	}
+	return false;
+}*/
 //class polygon :public hitable
 //{
 //public:
