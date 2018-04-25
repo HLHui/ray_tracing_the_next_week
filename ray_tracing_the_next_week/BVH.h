@@ -49,29 +49,20 @@ public:
 	hitable* right;
 	bvhNode() {}
 
-
 	bvhNode(hitable** l, int n, float time0, float time1)
 	{
 		int axis = int(3 * rand() / (float)RAND_MAX);
 		if (axis == 0)
 		{
-//			qsort(l, n, sizeof(hitable*), boxXcompare);
-			sort(l, l + n, boxXcompare);
-
-
+			qsort(l, n, sizeof(hitable*), boxXcompare);
 		}
 		else if (axis == 1)
 		{
-//			qsort(l, n, sizeof(hitable*), boxYcompare);
-			sort(l, l + n, boxYcompare);
-
+			qsort(l, n, sizeof(hitable*), boxYcompare);
 		}
 		else
 		{
-//			qsort(l, n, sizeof(hitable*), boxZcompare);
-	
-			sort(l, l + n, boxZcompare);
-
+			qsort(l, n, sizeof(hitable*), boxZcompare);
 		}
 		if (n == 1)
 		{
