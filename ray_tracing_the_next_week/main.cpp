@@ -13,12 +13,16 @@
 #include"rectangle.h"
 #include"box.h"
 #include"translate.h"
+#include"triangle.h"
+#include"polygon.h"
+#include"tiny_obj_loader.h"
+
 using namespace std;
 
 vec3 color(const ray &r, hitable *world, int depth)
 {
 	hitRecord rec;
-	/*if (world->hit(r, 0.001, (numeric_limits<float>::max)(), rec))
+	if (world->hit(r, 0.001, (numeric_limits<float>::max)(), rec))
 	{
 		ray scattered;
 		vec3 attenuation;
@@ -36,36 +40,38 @@ vec3 color(const ray &r, hitable *world, int depth)
 		vec3 unitDirection = unitVector(r.direction());
 		float t = 0.5*(unitDirection.y() + 1.0);
 		return (1.0 - t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
-	}*/
-
-	//make the background black
-	if (world->hit(r, 0.001, (numeric_limits<float>::max)(), rec))
-	{
-		ray scattered;
-		vec3 attenuation;
-		vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.p);
-		//cout << emitted[0] << " " << emitted[1] << " " << emitted[2] << endl;
-		/*if (emitted[0] != 0)
-		{
-			cout << emitted[0] << " " << emitted[1] << " " << emitted[2] << endl;
-			_getch();
-
-		}*/
-		if (depth < 50 && rec.matPtr->scatter(r, rec, attenuation, scattered))
-		{
-
-			return emitted + attenuation *color(scattered, world, depth + 1);
-		}
-		else
-		{
-			
-			return emitted;
-		}
 	}
-	else
-	{
-		return vec3(0, 0, 0);
-	}
+
+//	make the background black
+
+//	if (world->hit(r, 0.001, (numeric_limits<float>::max)(), rec))
+//	{
+//		ray scattered;
+//		vec3 attenuation;
+//		vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.p);
+////		cout << emitted[0] << " " << emitted[1] << " " << emitted[2] << endl;
+//		/*if (emitted[0] != 0)
+//		{
+//			cout << emitted[0] << " " << emitted[1] << " " << emitted[2] << endl;
+//			_getch();
+//		}*/
+//		float pdf;
+//		vec3 albedo;
+//		if (depth < 50 && rec.matPtr->scatter(r, rec, attenuation, scattered))
+//		{
+//			return emitted + attenuation *color(scattered, world, depth + 1);
+////			return emitted+
+//		}
+//		else
+//		{
+//			
+//			return emitted;
+//		}
+//	}
+//	else
+//	{
+//		return vec3(0, 0, 0);
+//	}
 
 }
 
@@ -123,10 +129,12 @@ hitable *twoSphere()
 	return new hitableList(list, 2);*/
 
 	texture *pertext = new noiseTexture();
-	hitable **list = new hitable*[2];
+	hitable **list = new hitable*[3];
 	list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(pertext));
 	list[1] = new sphere(vec3(0, 2, 0), 2, new lambertian(pertext));
-	return new hitableList(list, 2);
+	list[2] = new triangle(vec3(-8, 0, -2), vec3(-1, -2, -4), vec3(0, 5, -3), new metal(vec3(0.8, 0.6, 0.5), 0.0));
+
+	return new hitableList(list, 3);
 }
 
 hitable *simpleLight()
@@ -158,8 +166,10 @@ hitable *cornellBox()
 //	list[i++] = new box(vec3(130, 0, 65), vec3(295, 165, 230), white);
 //	list[i++] = new box(vec3(265, 0, 295), vec3(430, 330, 460), white);
 	list[i++] = new translate(new rotateY(new box(vec3(0, 0, 0), vec3(165, 165, 165), white), -15), vec3(130, 0, 65));
-	hitable *b = new translate(new rotateY(new box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15), vec3(256, 0, 295));
-	list[i++] = new constantMedium(b, 0.01, new constantTexture(vec3(0.5, 0.5, 0.5)));
+	list[i++] = new translate(new rotateY(new box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15), vec3(256, 0, 295));
+
+//	hitable *b = new translate(new rotateY(new box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15), vec3(256, 0, 295));
+//	list[i++] = new constantMedium(b, 0.01, new constantTexture(vec3(0.5, 0.5, 0.5)));
 	return new hitableList(list, i);
 }
 
@@ -197,12 +207,40 @@ hitable *final()
 	list[i++] = boundary;
 	hitable *tra = new translate(new rotateY(new box(vec3(0, 0, 0), vec3(165, 330, 165), white), 15), vec3(256, 0, 295));
 	list[i++] = new constantMedium(tra, 0.01, new constantTexture(vec3(0.5, 0.5, 0.5)));
+	list[i++] = new triangle(vec3(-8, 0, -2), vec3(-1, -2, -4), vec3(0, 5, -3), new metal(vec3(0.8, 0.6, 0.5), 0.0));
+
 	return new hitableList(list, i);
 }
 
+//hitable *triangle()
+//{
+//	texture *pertext = new noiseTexture();
+//	hitable **list = new hitable*[1];
+//	list[0] = new Triangle(vec3(-1, -1,-5), vec3(1, -1, -5), vec3(0, 1, -5), new lambertian(pertext));
+//	return new hitableList(list, 1);
+//}
+
+hitable *triangles()
+{
+	texture *pertext = new noiseTexture();
+	hitable **list = new hitable*[3];
+
+	int i = 0;
+	list[i++] = new triangle(vec3(-18, 2, -4), vec3(-10, -2, -4), vec3(-8, 5, -3), new metal(vec3(0.8, 0.6, 0.5), 0.0));
+	list[i++] = new triangle(vec3(-4, 0, -2), vec3(3, -2, -4), vec3(4, 5, -3), new dielectric(1.5));
+	list[i++] = new triangle(vec3(5, 0, -2), vec3(8, 0, -4), vec3(9, 5, -3), new lambertian(pertext));
+//	list[i++] = new triangle(vec3(-1, 1.5, -1), vec3(-3, 1.5, -1), vec3(-2, 3.5, -1), new lambertian(new constantTexture(vec3(rand() / float(RAND_MAX)*rand() / float(RAND_MAX), rand() / float(RAND_MAX)*rand() / float(RAND_MAX), rand() / float(RAND_MAX)*rand() / float(RAND_MAX)))));
+	list[i++] = new sphere(vec3(0, 2, 0), 2, new lambertian(pertext));
+	list[i++] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(pertext));
+//	list[i++] = new sphere(vec3(2, 1.0, 0), 1.0, new dielectric(1.5));
+//	list[i++] = new sphere(vec3(2, 1.0, 0), -0.9, new dielectric(1.5));
+
+	return new hitableList(list, i);
+
+}
 int main()
 {
-	int res = 5;
+	int res = 2;
 	int nx = 2000 / res;
 	int ny = 1000 / res;
 	int ns = 1000 / res;
@@ -210,25 +248,33 @@ int main()
 //	hitable *world = twoSphere();
 //	hitable *world = simpleLight();
 //	hitable *world = cornellBox();
-	hitable *world = final();
+//	hitable *world = final();
+
+	hitable *world = triangles();
+
 	ofstream img;
-	img.open("C:\\ray tracing image\\final_.ppm");
+	img.open("C:\\ray tracing image\\triangle4.ppm");
 //	img.open("C:\\ray tracing image\\texture2.ppm");
 //	img.open("C:\\ray tracing image\\translate.ppm");
 
 	img << "P3" << endl << nx << " " << ny << endl << "255" << endl;
 //	vec3 lookfrom(5, 2, 6);
 
-//	vec3 lookfrom(10, 7, 5);
-//	vec3 lookat(0, 0, 0);
+	vec3 lookfrom(10, 3, 10);
+	vec3 lookat(0, 0, 0);
 
 
-	vec3 lookfrom(278, 278, -600);
-	vec3 lookat(278, 278, 0);
+//	vec3 lookfrom(278, 278, -600);
+//	vec3 lookat(278, 278, 0);
+
+//	vec3 lookfrom(0, 0, 10);
+//	vec3 lookat(0, 1, -1);
+
 	float diskToFocus = (lookfrom - lookat).length();
 //	float diskToFocus = 10;
 	float aperture = 0.0;
 	camera cam(lookfrom, lookat, vec3(0, 1, 0), 60, float(nx) / float(ny), 0.1, 0.9*diskToFocus, 0.0, 1.0);
+
 	for (int j = ny - 1; j >= 0; j--)
 	{
 		for (int i = 0; i < nx; i++)
@@ -249,31 +295,6 @@ int main()
 			int ir = int(255.99*col[0]);
 			int ig = int(255.99*col[1]);
 			int ib = int(255.99*col[2]);
-
-			/*if (ir < 0)
-			{
-				ir = 0;
-			}
-			else if (ir > 256)
-			{
-				ir = 256;
-			}
-			if (ig < 0)
-			{
-				ig = 0;
-			}
-			else if (ig > 256)
-			{
-				ig = 256;
-			}
-			if (ib < 0)
-			{
-				ib = 0;
-			}
-			else if (ib > 256)
-			{
-				ib = 256;
-			}*/
 
 //			cout << ir << " , " << ig << " , " << ib << endl;
 			img << ir << " " << ig << " " << ib << endl;

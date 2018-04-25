@@ -35,7 +35,41 @@ public:
 		}
 		return true;
 	}
-	
+	void expand(const aabb& box)
+	{
+		if (box._min[0] < _min[0])
+		{
+			_min[0] = box._min[0];
+		}
+		if (box._min[1] < _min[1])
+		{
+			_min[1] = box._min[1];
+		}
+		if (box._min[2] < _min[2])
+		{
+			_min[2] = box._min[2];
+		}
+
+		if (box._max[0] < _max[0])
+		{
+			_max[0] = box._max[0];
+		}
+		if (box._max[1] < _max[1])
+		{
+			_max[1] = box._max[1];
+		}
+		if (box._max[2] < _max[2])
+		{
+			_max[2] = box._max[2];
+		}
+	}
+
+	void expand(const vec3 &vec)
+	{
+		if (vec[0] < _min[0])_min[0] = vec[0];
+		if (vec[1] < _min[1])_min[1] = vec[1];
+		if (vec[2] < _min[2])_min[2] = vec[2];
+	}
 };
 
 aabb surroundingBox(aabb box0, aabb box1)

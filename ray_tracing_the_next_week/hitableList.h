@@ -13,6 +13,9 @@ public:
 		hitRecord tempRec;
 		bool hitAnything = false;
 		double closestSoFar = tMax;
+
+//		cout << closestSoFar << endl;
+//		_getch();
 		for (int i = 0; i < listSize; i++)
 		{
 			if (list[i]->hit(r, tMin, closestSoFar, tempRec))

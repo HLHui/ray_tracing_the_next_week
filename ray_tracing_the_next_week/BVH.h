@@ -55,16 +55,23 @@ public:
 		int axis = int(3 * rand() / (float)RAND_MAX);
 		if (axis == 0)
 		{
-			qsort(l, n, sizeof(hitable*), boxXcompare);
+//			qsort(l, n, sizeof(hitable*), boxXcompare);
+			sort(l, l + n, boxXcompare);
+
 
 		}
 		else if (axis == 1)
 		{
-			qsort(l, n, sizeof(hitable*), boxYcompare);
+//			qsort(l, n, sizeof(hitable*), boxYcompare);
+			sort(l, l + n, boxYcompare);
+
 		}
 		else
 		{
-			qsort(l, n, sizeof(hitable*), boxZcompare);
+//			qsort(l, n, sizeof(hitable*), boxZcompare);
+	
+			sort(l, l + n, boxZcompare);
+
 		}
 		if (n == 1)
 		{

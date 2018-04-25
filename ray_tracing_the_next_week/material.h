@@ -55,6 +55,10 @@ public:
 	{
 		return vec3(0, 0, 0);
 	}
+	virtual float scatteringPdf(const ray &rIn, const hitRecord rec, const ray& scattered)const
+	{
+		return false;
+	}
 };
 
 class lambertian :public material
@@ -70,6 +74,15 @@ public:
 		return true;
 	}
 	texture *albedo;
+	float scatteringPdf(const ray& rIn, const hitRecord &rec, const ray& scattered)const
+	{
+		float cosine = dot(rec.normal, unitVector(scattered.direction()));
+		if (cosine < 0)
+		{
+			cosine = 0;
+		}
+		return cosine / M_PI;
+	}
 };
 
 class metal :public material
@@ -146,7 +159,6 @@ public:
 	}
 };
 
-
 //light emite material
 class diffuseLight :public material
 {
@@ -162,7 +174,6 @@ public:
 		return emit->value(u, v, p);
 	}
 };
-
 
 class isotropic :public material
 {
