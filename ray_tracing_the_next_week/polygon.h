@@ -64,73 +64,6 @@ public:
 	}
 	virtual bool hit(const ray &r, float tmin, float tmax, hitRecord &rec) const
 	{
-		/*vec3 polyN;
-		polyN = unitVector(cross((v0 - v1), (v1 - v2)));
-		float polyD = -(dot(polyN, v0));
-		float vd = dot(polyN, r.dir);
-		float v00 = -(dot(polyN, r.ori) + polyD);
-		if (vd == 0)
-		{
-			return false;
-		}
-		else
-		{
-			float t = v00 / vd;
-			vec3 pi = r.point_at_parameter(t);
-			float temp = abs(polyN.x());
-			int i = 1;
-			if (temp <= abs(polyN.y()))
-			{
-				temp = abs(polyN.y());
-				i++;
-			}
-			if (temp <= abs(polyN.z()))
-			{
-				i++;
-			}
-			vec2 vertexesUV[4];
-			if (i == 1)
-			{
-				vertexesUV[0] = vec2(v0.y(), v0.z());
-				vertexesUV[1] = vec2(v1.y(), v1.z());
-				vertexesUV[2] = vec2(v2.y(), v2.z());
-				vertexesUV[3] = vec2(pi.y(), pi.z());
-			}
-			else if (i == 2)
-			{
-				vertexesUV[0] = vec2(v0.x(), v0.z());
-				vertexesUV[1] = vec2(v1.x(), v1.z());
-				vertexesUV[2] = vec2(v2.x(), v2.z());
-
-				vertexesUV[3] = vec2(pi.x(), pi.z());
-			}
-			else if (i == 3)
-			{
-				vertexesUV[0] = vec2(v0.x(), v0.y());
-				vertexesUV[1] = vec2(v1.x(), v1.y());
-				vertexesUV[2] = vec2(v2.x(), v2.y());
-
-				vertexesUV[3] = vec2(pi.x(), pi.y());
-			}
-
-			vertexesUV[0] = vertexesUV[0] - vertexesUV[3];
-			vertexesUV[1] = vertexesUV[1] - vertexesUV[3];
-			vertexesUV[2] = vertexesUV[2] - vertexesUV[3];
-
-			vertexesUV[i] = vertexesUV[0];
-			if (inPolyonTest(vertexesUV, 4))
-			{
-				if (t<tmax&&t>tmin)
-				{
-					rec.t = t;
-					rec.p = r.point_at_parameter(rec.t);
-					rec.normal = polyN;
-					rec.matPtr = ma;
-					return true;
-				}
-			}
-			return false;
-		}*/
 
 		vec3 v0v1 = v1 - v0;
 		vec3 v0v2 = v2 - v0;
@@ -164,38 +97,6 @@ public:
 			return true;
 		}
 		return false;
-
-		/*float thist, t, u, v;
-		vec3 v0v1 = v1 - v0;
-		vec3 v0v2 = v2 - v0;
-		vec3 pvec = cross(r.dir, v0v2);
-		float det = dot(pvec, v0v1);
-		float kEpsilon = 0.00001;
-		if (det < kEpsilon)return false;
-		float inDet = 1 / det;
-		vec3 tvec = r.ori - v0;
-		u = dot(tvec, pvec)*inDet;
-		if (u < 0 || u>1)
-		{
-			return false;
-		}
-		vec3 qvec = cross(tvec, v0v1);
-		v = dot(r.dir, qvec)*inDet;
-		if (v < 0 || u + v>1)
-		{
-			return false;
-		}
-		t = dot(v0v2, qvec)*inDet;
-		if (t < 0)
-		{
-			return false;
-		}
-
-		rec.p = r.point_at_parameter(t);
-		rec.t = t;
-		rec.normal = normal;
-		rec.matPtr = ma;
-		return true;*/
 
 	}
 	virtual bool boundingBox(float t0, float t1, aabb& box)const
